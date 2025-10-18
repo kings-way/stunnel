@@ -5,7 +5,7 @@
 
   1) stunnel.exe - version with interactive GUI
 
-  2) tstunnel.exe - non-iteractive version for headless devices
+  2) tstunnel.exe - non-interactive version for headless devices
 
 
 ### Building stunnel from source (optional):
@@ -30,9 +30,9 @@
 
   5) download and unpack stunnel-(version).tar.gz
 
-  4) enter "stunnel-(version)\src" subdirectory
+  6) enter "stunnel-(version)\src" subdirectory
 
-  5) type "makece" to build stunnel
+  7) type "makece" to build stunnel
 
 
 ### Installing stunnel:

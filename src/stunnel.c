@@ -832,7 +832,7 @@ NOEXPORT int signal_pipe_dispatch(void) {
         pid_status_nohang("Child process"); /* 'exec' process */
 #endif /* defined USE_FORK */
         return 0;
-#endif /* !defind USE_WIN32 */
+#endif /* !defined USE_WIN32 */
     case SIGNAL_TERMINATE:
         s_log(LOG_DEBUG, "Processing SIGNAL_TERMINATE");
         s_log(LOG_NOTICE, "Terminated");
@@ -1106,12 +1106,14 @@ void stunnel_info(int level) {
     features=str_cat(features, "ENGINE");
     tls_feature_found=1;
 #endif /* !defined(OPENSSL_NO_ENGINE) */
+#ifdef USE_FIPS
     if(fips_available()) {
         if(tls_feature_found)
             features=str_cat(features, ",");
         features=str_cat(features, "FIPS");
         tls_feature_found=1;
     }
+#endif /* USE_FIPS */
 #ifndef OPENSSL_NO_OCSP
     if(tls_feature_found)
         features=str_cat(features, ",");

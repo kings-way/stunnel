@@ -454,6 +454,11 @@ The file must be either in PEM or P12 format.
 
 A certificate chain is required in server mode, and optional in client mode.
 
+The B<cert> option may be specified multiple times. The first certificate
+encountered is used as the server or client certificate, while any subsequent
+certificates are treated as intermediate chain elements. This functionality
+requires OpenSSL version 1.0.2 or later.
+
 This parameter is also used as the certificate identifier (PKCS#11 URI) when
 a hardware engine or provider is enabled.
 
@@ -821,7 +826,7 @@ Currently supported protocols:
 
 =item I<cifs>
 
-Proprietary (undocummented) extension of CIFS protocol implemented in Samba.
+Proprietary (undocumented) extension of CIFS protocol implemented in Samba.
 Support for this extension was dropped in Samba 3.0.0.
 
 =item I<capwin>

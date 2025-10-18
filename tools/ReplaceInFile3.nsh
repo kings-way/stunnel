@@ -1,11 +1,11 @@
 /*
 First occurrence to be replaced: FST_OCC.
    FST_OCC = all, renders the same as FST_OCC = 1.
-   if FST_OCC greater than the number of occurences in the file: no alteration of the file,
+   if FST_OCC greater than the number of occurrences in the file: no alteration of the file,
    FST_OCC negative or 0 will leave the file content unchanged no matter the NR_OCC value.
 Nr max of occurrences replaced onwards: NR_OCC,
    if NR_OCC = all --> replacement as long as a string to be replaced is found,
-   if NR_OCC = stritly positive integer, replaces up to NR_OCC occurrences provided they exist,
+   if NR_OCC = strictly positive integer, replaces up to NR_OCC occurrences provided they exist,
    NR_OCC negative or 0 yields the same as all.
 
 Order to run down and search the file: from left to right and top down.

@@ -73,6 +73,7 @@ NOEXPORT STACK_OF(SSL_COMP) *comp_methods[STUNNEL_COMPS];
 #endif
 
 #ifdef USE_FIPS
+
 int fips_default(void) {
     static int cache=-1;
 
@@ -85,12 +86,10 @@ int fips_default(void) {
     }
     return cache;
 }
-#endif /* USE_FIPS */
 
 int fips_available(void) { /* either FIPS provider or container is available */
-#ifdef USE_FIPS
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-    static OSSL_PROVIDER *fips=NULL;
+    static OSSL_PROVIDER *fips=NULL; /* cache the success */
 
     if(!fips)
         fips=OSSL_PROVIDER_try_load(NULL, "fips", 1);
@@ -101,10 +100,9 @@ int fips_available(void) { /* either FIPS provider or container is available */
     return strstr(OpenSSL_version(OPENSSL_VERSION), "-fips") != NULL ||
         strstr(OpenSSL_version(OPENSSL_VERSION), "FIPS") != NULL; /* RHEL */
 #endif /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
-#else /* USE_FIPS */
-    return 0;
-#endif /* USE_FIPS */
 }
+
+#endif /* USE_FIPS */
 
 /* initialize libcrypto before invoking API functions that require it */
 void crypto_init(void) {
@@ -192,16 +190,16 @@ void crypto_init(void) {
 #endif /* USE_WIN32 */
 }
 
-/* initialize lbssl before parsing the configuration file */
+/* initialize libssl before parsing the configuration file */
 int ssl_init(void) {
-    index_ssl_cli=SSL_get_ex_new_index(0,
-        strdup("CLI pointer"), NULL, NULL, NULL);
-    index_ssl_ctx_opt=SSL_CTX_get_ex_new_index(0,
-        strdup("SERVICE_OPTIONS pointer"), NULL, NULL, NULL);
-    index_session_authenticated=SSL_SESSION_get_ex_new_index(0,
-        strdup("session authenticated"), cb_new_auth, NULL, NULL);
-    index_session_connect_address=SSL_SESSION_get_ex_new_index(0,
-        strdup("session connect address"), NULL, cb_dup_addr, cb_free_addr);
+    index_ssl_cli=SSL_get_ex_new_index(0, NULL,
+        NULL, NULL, NULL);
+    index_ssl_ctx_opt=SSL_CTX_get_ex_new_index(0, NULL,
+        NULL, NULL, NULL);
+    index_session_authenticated=SSL_SESSION_get_ex_new_index(0, NULL,
+        cb_new_auth, NULL, NULL);
+    index_session_connect_address=SSL_SESSION_get_ex_new_index(0, NULL,
+        NULL, cb_dup_addr, cb_free_addr);
     if(index_ssl_cli<0 || index_ssl_ctx_opt<0 ||
             index_session_authenticated<0 ||
             index_session_connect_address<0) {
@@ -251,8 +249,7 @@ NOEXPORT int cb_new_auth(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
     (void)parent; /* squash the unused parameter warning */
     (void)ptr; /* squash the unused parameter warning */
     (void)argl; /* squash the unused parameter warning */
-    s_log(LOG_DEBUG, "Initializing application specific data for %s",
-        (char *)argp);
+    (void)argp; /* squash the unused parameter warning */
     if(!CRYPTO_set_ex_data(ad, idx, (void *)(-1)))
         sslerror("CRYPTO_set_ex_data");
 #if OPENSSL_VERSION_NUMBER<0x10100000L
@@ -277,8 +274,7 @@ NOEXPORT int cb_dup_addr(CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from,
     (void)from; /* squash the unused parameter warning */
     (void)idx; /* squash the unused parameter warning */
     (void)argl; /* squash the unused parameter warning */
-    s_log(LOG_DEBUG, "Duplicating application specific data for %s",
-        (char *)argp);
+    (void)argp; /* squash the unused parameter warning */
     src=*(void **)from_d;
     len=addr_len(src);
     dst=str_alloc_detached((size_t)len);
@@ -293,37 +289,40 @@ NOEXPORT void cb_free_addr(void *parent, void *ptr, CRYPTO_EX_DATA *ad,
     (void)ad; /* squash the unused parameter warning */
     (void)idx; /* squash the unused parameter warning */
     (void)argl; /* squash the unused parameter warning */
-    s_log(LOG_DEBUG, "Deallocating application specific data for %s",
-        (char *)argp);
+    (void)argp; /* squash the unused parameter warning */
     str_free(ptr);
 }
 
 int ssl_configure(GLOBAL_OPTIONS *global) { /* configure global TLS settings */
 #ifdef USE_FIPS
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-    if(global->option.fips) {
-        if(!EVP_default_properties_is_fips_enabled(NULL)) {
+    if(global->option.fips !=
+            (OSSL_PROVIDER_available(NULL, "fips") &&
+            EVP_default_properties_is_fips_enabled(NULL))) {
+        if(global->option.fips) { /* need to enable */
             if(!fips_available()) {
                 sslerror("FIPS PROVIDER");
                 return 1;
             }
-            if(!EVP_default_properties_enable_fips(NULL, 1) ||
-                    !EVP_default_properties_is_fips_enabled(NULL)) {
+            if(!EVP_default_properties_enable_fips(NULL, 1)) {
                 s_log(LOG_ERR, "Enabling FIPS provider failed");
                 return 1;
             }
-            s_log(LOG_NOTICE, "FIPS provider enabled");
-        }
-    } else {
-        if(EVP_default_properties_is_fips_enabled(NULL)) {
-            if(!EVP_default_properties_enable_fips(NULL, 0) ||
-                    EVP_default_properties_is_fips_enabled(NULL)) {
+        } else { /* need to disable */
+            if(fips_default()) {
+                s_log(LOG_ERR, "Refusing to override 'fips=yes' default property");
+                return 1;
+            }
+            if(!EVP_default_properties_enable_fips(NULL, 0)) {
                 s_log(LOG_ERR, "Disabling FIPS provider failed");
                 return 1;
             }
-            s_log(LOG_NOTICE, "FIPS provider disabled");
         }
     }
+    s_log(LOG_NOTICE, "FIPS provider %s",
+        (OSSL_PROVIDER_available(NULL, "fips") &&
+        EVP_default_properties_is_fips_enabled(NULL)) ?
+        "enabled" : "disabled");
 #else /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
     if(FIPS_mode()!=global->option.fips) {
         RAND_set_rand_method(NULL); /* reset RAND methods */
@@ -337,9 +336,9 @@ int ssl_configure(GLOBAL_OPTIONS *global) { /* configure global TLS settings */
             return 1;
         }
     }
-#endif /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
     s_log(LOG_NOTICE, "FIPS mode %s",
         global->option.fips ? "enabled" : "disabled");
+#endif /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
 #endif /* USE_FIPS */
 
 #ifndef OPENSSL_NO_COMP
@@ -354,7 +353,7 @@ int ssl_configure(GLOBAL_OPTIONS *global) { /* configure global TLS settings */
     ENGINE_load_builtin_engines();
 #endif
 
-    /* cryptographic algoritms can only be configured once,
+    /* cryptographic algorithms can only be configured once,
      * after all the engines are initialized */
 #if OPENSSL_VERSION_NUMBER>=0x10100000L
     OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);

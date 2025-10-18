@@ -13,10 +13,9 @@ A sponsor could allocate my time to get them faster.
 
 * Add client certificate autoselection based on the list of accepted issuers:
   SSL_CTX_set_client_cert_cb(), SSL_get_client_CA_list().
-* OCSP stapling (tlsext_status).
 * Indirect CRL support (RFC 3280, section 5).
 * Add an Apparmor profile.
-* Log rotation on Windows.
+* Log rotation on Windows (-reopen was already implemented in stunnel 5.15).
 * Configuration file option to limit the number of concurrent connections.
 * Command-line server control interface on Unix.
 * An Android GUI.

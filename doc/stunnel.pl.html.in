@@ -506,6 +506,8 @@
 
 <p>Certyfikat jest konieczny, aby u&#x17C;ywa&#x107; programu w trybie serwera. W trybie klienta certyfikat jest opcjonalny.</p>
 
+<p>Opcja <b>cert</b> mo&#x17C;e by&#x107; podana wielokrotnie. Pierwszy napotkany certyfikat zostanie u&#x17C;yty jako certyfikat serwera lub klienta, natomiast kolejne b&#x119;d&#x105; traktowane jako elementy po&#x15B;rednie ła&#x144;cucha. Ta funkcjonalno&#x15B;&#x107; wymaga biblioteki OpenSSL w wersji 1.0.2 lub nowszej.</p>
+
 <p>Je&#x17C;eli u&#x17C;ywany jest silnik kryptograficzny lub provider, to opcja <b>cert</b> pozwala wybra&#x107; identyfikator (PKCS#11 URI) u&#x17C;ywanego certyfikatu.</p>
 
 <p>Uwaga: provider wymaga OpenSSL 3.0 lub nowszego</p>
@@ -846,13 +848,7 @@ prime256v1 (OpenSSL starszy ni&#x17C; 1.1.1)</code></pre>
 
 <p>wymagaj rozstrzygaj&#x105;cej odpowiedzi respondera OCSP</p>
 
-</dd>
-<dt id="OCSPrequire-yes-no1"><b>OCSPrequire</b> = yes | no</dt>
-<dd>
-
 <p>Wył&#x105;czenie tej opcji pozwala na zaakceptowanie poł&#x105;czenia pomimo braku otrzymania rozstrzygaj&#x105;cej odpowiedzi OCSP ze staplingu i bezpo&#x15B;redniego &#x17C;&#x105;dania wysłanego do respondera.</p>
-
-<p>default: yes</p>
 
 <p>domy&#x15B;lnie: yes</p>
 

@@ -1,11 +1,12 @@
 #!/usr/bin/perl
 
 $config   = "/var/openssl/openssl.cnf";
-$capath   = "/usr/bin/openssl ca";
-$certpass = "mypassword";
-$tempca   = "/tmp/ssl/cli".rand 10000;
-$tempout  = "/tmp/ssl/certtmp".rand 10000;
-$caout    = "/tmp/ssl/certout.txt";
+$capath   = "/usr/bin/openssl";
+die "CERTPASS environment variable not set" unless $ENV{CERTPASS};
+umask 0077;
+use File::Temp qw(tempfile);
+my ($tempca_fh,  $tempca)  = tempfile("cliXXXXXX",  UNLINK => 0);
+my ($tempout_fh, $tempout) = tempfile("certtmpXXXXXX", UNLINK => 0);
 $CAcert   = "/var/openssl/localCA/cacert.pem";
 $spkac	  = "";
 
@@ -14,22 +15,28 @@ $spkac	  = "";
 $spkac = $FIELDS{'SPKAC'};
 $spkac =~ s/\n//g;
 
-open(TEMPCE,">$tempca") || die &Error;
-print TEMPCE "C = $FIELDS{'country'}\n";
-print TEMPCE "ST = $FIELDS{'state'}\n";
-print TEMPCE "O = $FIELDS{'organization'}\n";
-print TEMPCE "Email = $FIELDS{'email'}\n";
-print TEMPCE "CN = $FIELDS{'who'}\n";
-print TEMPCE "SPKAC = $spkac\n";
-close(TEMPCE);                         
+print $tempca_fh "C = $FIELDS{'country'}\n";
+print $tempca_fh "ST = $FIELDS{'state'}\n";
+print $tempca_fh "O = $FIELDS{'organization'}\n";
+print $tempca_fh "Email = $FIELDS{'email'}\n";
+print $tempca_fh "CN = $FIELDS{'who'}\n";
+print $tempca_fh "SPKAC = $spkac\n";
+close($tempca_fh);
+close($tempout_fh);
 
-system("$capath -batch -config $config -spkac $tempca -out $tempout -key $certpass -cert $CAcert>> $caout 2>&1"); 
+system($capath, "ca",
+    "-batch",
+    "-config", $config,
+    "-spkac", $tempca,
+    "-out", $tempout,
+    "-passin", "env:CERTPASS",
+    "-cert", $CAcert);
 open(CERT,"$tempout") || die &Error;
 @certificate = <CERT>;
 close(CERT);
 
-#system("rm -f $tempca");
-#system("rm -f $tempout");
+unlink $tempca;
+unlink $tempout;
 
 print "Content-type: application/x-x509-user-cert\n\n";
 print @certificate;

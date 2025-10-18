@@ -38,7 +38,11 @@
 #include "prototypes.h"
 
 #if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if OPENSSL_VERSION_NUMBER >= 0x30500000L
+#define DEFAULT_CURVES "X25519MLKEM768:X25519:P-256:X448:P-521:P-384"
+#else /* OPENSSL_VERSION_NUMBER>=0x30500000L */
 #define DEFAULT_CURVES "X25519:P-256:X448:P-521:P-384"
+#endif /* OPENSSL_VERSION_NUMBER>=0x30500000L */
 #define DEFAULT_CURVES_FIPS "P-256:P-521:P-384"
 #else /* OpenSSL version < 1.1.1 */
 #define DEFAULT_CURVES "prime256v1"
@@ -329,8 +333,10 @@ static const char *option_not_found=
 
 static const char *stunnel_cipher_list=
     "HIGH:!aNULL:!SSLv2:!DH:!kDHEPSK";
+#ifdef USE_FIPS
 static const char *fips_cipher_list=
     "FIPS:!DH:!kDHEPSK";
+#endif /* USE_FIPS */
 
 #ifndef OPENSSL_NO_TLS1_3
 static const char *stunnel_ciphersuites=
@@ -941,9 +947,11 @@ NOEXPORT const char *parse_global_option(CMD cmd, GLOBAL_OPTIONS *options, char 
 #endif /* USE_FIPS */
         break;
     case CMD_PRINT_HELP:
+#ifdef USE_FIPS
         if(fips_available())
             s_log(LOG_NOTICE, "%-22s = yes|no FIPS 140-2 mode",
                 "fips");
+#endif /* USE_FIPS */
         break;
     }
 
@@ -1523,6 +1531,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         section->local_fd=NULL;
         name_list_dup(&section->local_addr.names,
             new_service_options.local_addr.names);
+        section->option.default_local_addr=1;
         break;
     case CMD_FREE:
         name_list_free(section->local_addr.names);
@@ -1533,6 +1542,12 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         if(strcasecmp(opt, "accept"))
             break;
         section->option.accept=1;
+        if(section->option.default_local_addr) {
+            name_list_free(section->local_addr.names);
+            addrlist_clear(&section->local_addr, 1);
+            section->local_fd=NULL;
+            section->option.default_local_addr=0;
+        }
         name_list_append(&section->local_addr.names, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1563,6 +1578,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_COPY:
         name_list_dup(&section->ca_engine,
             new_service_options.ca_engine);
+        section->option.default_ca_engine=0;
         break;
     case CMD_FREE:
         name_list_free(section->ca_engine);
@@ -1570,6 +1586,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "CAengine"))
             break;
+        if(section->option.default_ca_engine) {
+            name_list_free(section->ca_engine);
+            section->option.default_ca_engine=0;
+        }
         name_list_append(&section->ca_engine, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1695,16 +1715,21 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         section->cert=NULL;
         break;
     case CMD_SET_COPY:
-        section->cert=str_dup_detached(new_service_options.cert);
+        name_list_dup(&section->cert,
+            new_service_options.cert);
+        section->option.default_cert=1;
         break;
     case CMD_FREE:
-        str_free(section->cert);
+        name_list_free(section->cert);
         break;
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "cert"))
             break;
-        str_free(section->cert);
-        section->cert=str_dup_detached(arg);
+        if(section->option.default_cert) {
+            name_list_free(section->cert);
+            section->option.default_cert=0;
+        }
+        name_list_append(&section->cert, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
 #ifndef OPENSSL_NO_PSK
@@ -1735,6 +1760,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_COPY:
         name_list_dup(&section->check_email,
             new_service_options.check_email);
+        section->option.default_check_email=1;
         break;
     case CMD_FREE:
         name_list_free(section->check_email);
@@ -1742,6 +1768,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "checkEmail"))
             break;
+        if(section->option.default_check_email) {
+            name_list_free(section->check_email);
+            section->option.default_check_email=0;
+        }
         name_list_append(&section->check_email, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1764,6 +1794,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_COPY:
         name_list_dup(&section->check_host,
             new_service_options.check_host);
+        section->option.default_check_host=1;
         break;
     case CMD_FREE:
         name_list_free(section->check_host);
@@ -1771,6 +1802,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "checkHost"))
             break;
+        if(section->option.default_check_host) {
+            name_list_free(section->check_host);
+            section->option.default_check_host=0;
+        }
         name_list_append(&section->check_host, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1793,6 +1828,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_COPY:
         name_list_dup(&section->check_ip,
             new_service_options.check_ip);
+        section->option.default_check_ip=1;
         break;
     case CMD_FREE:
         name_list_free(section->check_ip);
@@ -1800,6 +1836,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "checkIP"))
             break;
+        if(section->option.default_check_ip) {
+            name_list_free(section->check_ip);
+            section->option.default_check_ip=0;
+        }
         name_list_append(&section->check_ip, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1846,12 +1886,15 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         }
         break;
     case CMD_PRINT_DEFAULTS:
+#ifdef USE_FIPS
         if(fips_available()) {
             s_log(LOG_NOTICE, "%-22s = %s %s", "ciphers",
                 fips_cipher_list, "(with \"fips = yes\")");
             s_log(LOG_NOTICE, "%-22s = %s %s", "ciphers",
                 stunnel_cipher_list, "(with \"fips = no\")");
-        } else {
+        } else
+#endif /* USE_FIPS */
+        {
             s_log(LOG_NOTICE, "%-22s = %s", "ciphers", stunnel_cipher_list);
         }
         break;
@@ -1933,6 +1976,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         break;
     case CMD_SET_COPY:
         name_list_dup(&section->config, new_service_options.config);
+        section->option.default_config=1;
         break;
     case CMD_FREE:
         name_list_free(section->config);
@@ -1940,6 +1984,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "config"))
             break;
+        if(section->option.default_config) {
+            name_list_free(section->config);
+            section->option.default_config=0;
+        }
         name_list_append(&section->config, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -1965,6 +2013,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         section->connect_session=NULL;
         name_list_dup(&section->connect_addr.names,
             new_service_options.connect_addr.names);
+        section->option.default_connect_addr=1;
         break;
     case CMD_FREE:
         name_list_free(section->connect_addr.names);
@@ -1974,6 +2023,12 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "connect"))
             break;
+        if(section->option.default_connect_addr) {
+            name_list_free(section->connect_addr.names);
+            addrlist_clear(&section->connect_addr, 0);
+            section->connect_session=NULL;
+            section->option.default_connect_addr=0;
+        }
         name_list_append(&section->connect_addr.names, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -2099,12 +2154,15 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         }
         break;
     case CMD_PRINT_DEFAULTS:
+#ifdef USE_FIPS
         if(fips_available()) {
             s_log(LOG_NOTICE, "%-22s = %s %s", "curves",
                 DEFAULT_CURVES_FIPS, "(with \"fips = yes\")");
             s_log(LOG_NOTICE, "%-22s = %s %s", "curves",
                 DEFAULT_CURVES, "(with \"fips = no\")");
-        } else {
+        } else
+#endif /* USE_FIPS */
+        {
             s_log(LOG_NOTICE, "%-22s = %s", "curves", DEFAULT_CURVES);
         }
         break;
@@ -2421,8 +2479,6 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         section->key=str_dup_detached(arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
-        if(section->cert && !section->key)
-            section->key=str_dup_detached(section->cert);
         break;
     case CMD_PRINT_DEFAULTS:
         break;
@@ -2830,6 +2886,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_COPY:
         name_list_dup(&section->protocol_header,
             new_service_options.protocol_header);
+        section->option.default_protocol_header=1;
         break;
     case CMD_FREE:
         name_list_free(section->protocol_header);
@@ -2837,6 +2894,10 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "protocolHeader"))
             break;
+        if(section->option.default_protocol_header) {
+            name_list_free(section->protocol_header);
+            section->option.default_protocol_header=0;
+        }
         name_list_append(&section->protocol_header, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:
@@ -3055,6 +3116,7 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
         addrlist_clear(&section->redirect_addr, 0);
         name_list_dup(&section->redirect_addr.names,
             new_service_options.redirect_addr.names);
+        section->option.default_redirect_addr=1;
         break;
     case CMD_FREE:
         name_list_free(section->redirect_addr.names);
@@ -3063,6 +3125,12 @@ NOEXPORT const char *parse_service_option(CMD cmd, SERVICE_OPTIONS **section_ptr
     case CMD_SET_VALUE:
         if(strcasecmp(opt, "redirect"))
             break;
+        if(section->option.default_redirect_addr) {
+            name_list_free(section->redirect_addr.names);
+            str_free(section->redirect_addr.addr);
+            addrlist_clear(&section->redirect_addr, 0);
+            section->option.default_redirect_addr=0;
+        }
         name_list_append(&section->redirect_addr.names, arg);
         return NULL; /* OK */
     case CMD_INITIALIZE:

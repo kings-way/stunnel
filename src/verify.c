@@ -459,14 +459,14 @@ X509 *engine_get_cert(ENGINE *engine, const char *id) {
     struct {
         const char *id;
         X509 *cert;
-    } parms;
+    } params;
 
-    parms.id=id;
-    parms.cert=NULL;
-    ENGINE_ctrl_cmd(engine, "LOAD_CERT_CTRL", 0, &parms, NULL, 1);
-    if(!parms.cert)
+    params.id=id;
+    params.cert=NULL;
+    ENGINE_ctrl_cmd(engine, "LOAD_CERT_CTRL", 0, &params, NULL, 1);
+    if(!params.cert)
         sslerror("ENGINE_ctrl_cmd");
-    return parms.cert;
+    return params.cert;
 }
 
 #endif

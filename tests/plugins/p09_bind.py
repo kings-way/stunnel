@@ -19,7 +19,7 @@ class StunnelTest(StunnelAcceptConnect):
 
 
 class BindingTest(StunnelTest):
-    """Checking if the service does't refuse to start if binding fails for some addresses:ports.
+    """Checking if the service doesn't refuse to start if binding fails for some addresses:ports.
        Sample log expected:
        LOG5[ui]: Binding service [server] to 127.0.0.1:43293: Address already in use (98)
     """

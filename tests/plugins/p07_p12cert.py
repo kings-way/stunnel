@@ -1,4 +1,21 @@
-"""stunnel server tests"""
+"""stunnel server tests
+
+This test uses a PKCS#12 file with a certificate chain and empty passphrase,
+encrypted with PBMAC1 (RFC 9579) and AES-256-CBC — a FIPS-compliant setup
+supported by OpenSSL 3.4.0 and later.
+
+On systems with FIPS mode enabled (e.g. Red Hat), OpenSSL versions prior to 3.4.0
+fail to handle empty passphrases correctly and prompt for input despite the key
+being unencrypted.
+
+To prevent the test from hanging due to such interactive prompts, the subprocess
+running stunnel is detached from the controlling terminal by creating a new session
+(preexec_fn=os.setsid). This blocks the child process from accessing /dev/tty
+and disables interactive password prompts.
+
+Consequently, if FIPS mode is active and the OpenSSL version is less than 3.4.0,
+the test is skipped.
+"""
 
 import logging
 import pathlib
@@ -28,6 +45,9 @@ class Certp12Test(StunnelTest):
         super().__init__(cfg, logger)
         self.params.description = '071. Test PKCS#12 certificate'
         self.params.context = 'load_verify_locations"'
+        self.events.skip = [
+            "passphrase callback error"
+        ]
         self.events.failure = [
             "peer did not return a certificate",
             "bad certificate",

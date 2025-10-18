@@ -1,15 +1,32 @@
 # stunnel change log
 
 
+### Version 5.76, 2025.10.18, urgency: MEDIUM
+* Security bugfixes
+  - OpenSSL DLLs updated to version 3.5.4.
+  - Service-level multivalued options now override (rather than
+    append to) global defaults, preventing unintended configurations.
+* Bugfixes
+  - Fixed enabling/disabling of the default fips=yes property.
+  - Missing OCSP stapling is no longer logged as an error.
+  - Fixed a crash when a PIN was required due to the PKCS#11
+    CKA_ALWAYS_AUTHENTICATE attribute.
+* Features
+  - Quantum-resistant hybrid key agreement X25519+ML-KEM-768
+    (X25519MLKEM768) used by default with OpenSSL 3.5+ and TLS 1.3.
+  - Multiple cert sources are supported, allowing a certificate to
+    be fetched from a provider while loading the chain from a file.
+  - Android build switched to a 16 KB page size.
+
 ### Version 5.75, 2025.05.26, urgency: MEDIUM
 * Security bugfixes
   - OpenSSL DLLs updated to version 3.4.1.
   - OpenSSL FIPS Provider updated to version 3.1.2.
 * Bugfixes
   - Fixed infinite loop triggered by OCSP URL parsing errors
-    (thx to Richard Könning for reporting).
+    (thanks to Richard Könning for reporting).
   - Fixed OPENSSL_NO_OCSP build issues
-    (thx to Dmitry Mostovoy for reporting).
+    (thanks to Dmitry Mostovoy for reporting).
   - Fixed default curve selection in FIPS mode with OpenSSL 3.4+.
   - Fixed tests with modern Python versions.
   - Fixed tests with multiple OpenSSL versions installed.
@@ -40,7 +57,7 @@
   - Fix the IPv6 test on a non-IPv6 machine.
 * Features
   - HELO replaced with EHLO in the post-STARTTLS SMTP
-    protocol negotiation (thx to Peter Pentchev).
+    protocol negotiation (thanks to Peter Pentchev).
   - OCSP stapling fetches moved away from server threads.
   - Improved client-side session resumption.
   - Added support for the mimalloc allocator.
@@ -103,7 +120,7 @@
     applying https://github.com/openssl/openssl/pull/20312.
   - Fixed stunnel.spec used for building rpm packages.
   - Fixed tests on some OSes and architectures by merging
-    Debian 07-tests-errmsg.patch (thx to Peter Pentchev).
+    Debian 07-tests-errmsg.patch (thanks to Peter Pentchev).
 
 ### Version 5.68, 2023.02.07, urgency: HIGH
 * Security bugfixes
@@ -130,7 +147,7 @@
 * Bugfixes
   - Fixed "make cert" with OpenSSL older than 3.0.
   - Fixed the code and the documentation to use conscious
-    language for SNI servers (thx to Clemens Lang).
+    language for SNI servers (thanks to Clemens Lang).
 
 ### Version 5.66, 2022.09.11, urgency: MEDIUM
 * New features
@@ -165,7 +182,7 @@
 * New features
   - Updated stunnel.spec to support bash completion.
 * Bugfixes
-  - Fixed a PRNG initialization crash (thx to Gleydson Soares).
+  - Fixed a PRNG initialization crash (thanks to Gleydson Soares).
 
 ### Version 5.62, 2022.01.17, urgency: MEDIUM
 * New features
@@ -181,13 +198,13 @@
   - Added client mode allowing authenticated users to view
     logs, reconfigure and terminate running stunnel services.
   - Added support for multiple GUI and service instances
-    distinguised by the location of stunnel.conf.
+    distinguished by the location of stunnel.conf.
   - Improved log window scrolling.
   - Added a new 'Pause auto-scroll' GUI checkbox.
   - Double click on the icon tray replaced with single click.
   - OpenSSL DLLs updated to version 3.0.1.
 * Other new features
-  - Rewritten the testing framework in python (thx to
+  - Rewritten the testing framework in python (thanks to
     Peter Pentchev for inspiration and initial framework).
   - Added support for missing SSL_set_options() values.
   - Updated stunnel.spec to support RHEL8.
@@ -209,25 +226,25 @@
     not supported by 'smtp', 'pop3' and 'imap' protocols.
   - Enforced minimum WIN32 log window size.
   - Fixed support for password-protected private keys with
-    OpenSSL 3.0 (thx to Dmitry Belyavskiy).
+    OpenSSL 3.0 (thanks to Dmitry Belyavskiy).
 
 ### Version 5.59, 2021.04.05, urgency: HIGH
 * Security bugfixes
   - OpenSSL DLLs updated to version 1.1.1k.
 * New features
-  - Client-side "protocol = ldap" support (thx to Bart
+  - Client-side "protocol = ldap" support (thanks to Bart
     Dopheide and Seth Grover).
 * Bugfixes
   - The test suite fixed not to require external connectivity.
-  - Fixed paths in generated manuals (thx to Tatsuki Makino).
+  - Fixed paths in generated manuals (thanks to Tatsuki Makino).
   - Fixed configuration reload when compression is used.
   - Fixed compilation with early releases of OpenSSL 1.1.1.
 
 ### Version 5.58, 2021.02.20, urgency: HIGH
 * Security bugfixes
   - The "redirect" option was fixed to properly handle
-    unauthenticated requests (thx to Martin Stein).
-  - Fixed a double free with OpenSSL older than 1.1.0 (thx to
+    unauthenticated requests (thanks to Martin Stein).
+  - Fixed a double free with OpenSSL older than 1.1.0 (thanks to
     Petr Strukov).
   - OpenSSL DLLs updated to version 1.1.1j.
 * New features
@@ -241,29 +258,29 @@
   - X.509v3 extensions required by modern versions of OpenSSL
     are added to generated self-signed test certificates.
   - Fixed a tiny memory leak in configuration file reload
-    error handling (thx to Richard Könning).
-  - Merged Debian 05-typos.patch (thx to Peter Pentchev).
+    error handling (thanks to Richard Könning).
+  - Merged Debian 05-typos.patch (thanks to Peter Pentchev).
   - Merged with minor changes Debian 06-hup-separate.patch
-    (thx to Peter Pentchev).
-  - Merged Debian 07-imap-capabilities.patch (thx to Ansgar).
-  - Merged Debian 08-addrconfig-workaround.patch (thx to Peter
+    (thanks to Peter Pentchev).
+  - Merged Debian 07-imap-capabilities.patch (thanks to Ansgar).
+  - Merged Debian 08-addrconfig-workaround.patch (thanks to Peter
     Pentchev).
   - Fixed tests on the WSL2 platform.
   - NSIS installer updated to version 3.06 to fix a multiuser
     installation bug on some platforms, including 64-bit XP.
-  - Fixed engine initialization (thx to Petr Strukov).
+  - Fixed engine initialization (thanks to Petr Strukov).
   - FIPS TLS feature is reported when a provider or container
     is available, and not when FIPS control API is available.
 
 ### Version 5.57, 2020.10.11, urgency: HIGH
 * Security bugfixes
   - The "redirect" option was fixed to properly
-    handle "verifyChain = yes" (thx to Rob Hoes).
+    handle "verifyChain = yes" (thanks to Rob Hoes).
   - OpenSSL DLLs updated to version 1.1.1h.
 * New features
   - New securityLevel configuration file option.
   - FIPS support for RHEL-based distributions.
-  - Support for modern PostgreSQL clients (thx to Bram Geron).
+  - Support for modern PostgreSQL clients (thanks to Bram Geron).
   - Windows tooltip texts updated to mention "stunnel".
   - TLS 1.3 configuration updated for better compatibility.
 * Bugfixes
@@ -280,7 +297,7 @@
 * Bugfixes
   - Support for realpath(3) implementations incompatible
     with POSIX.1-2008, such as 4.4BSD or Solaris.
-  - Support for engines without PRNG seeding methods (thx to
+  - Support for engines without PRNG seeding methods (thanks to
     Petr Mikhalitsyn).
   - Retry unsuccessful port binding on configuration
     file reload.
@@ -334,7 +351,7 @@
   - Session ticket support (requires OpenSSL 1.1.1 or later).
     "connect" address persistence is currently unsupported
     with session tickets.
-  - SMTP HELO before authentication (thx to Jacopo Giudici).
+  - SMTP HELO before authentication (thanks to Jacopo Giudici).
   - New "curves" option to control the list of elliptic
     curves in OpenSSL 1.1.0 and later.
   - New "ciphersuites" option to control the list of
@@ -343,8 +360,8 @@
   - Compatibility with the current OpenSSL 3.0.0-dev branch.
   - Better performance with SSL_set_read_ahead()/SSL_pending().
 * Bugfixes
-  - Fixed PSKsecrets as a global option (thx to Teodor Robas).
-  - Fixed a memory allocation bug (thx to matanfih).
+  - Fixed PSKsecrets as a global option (thanks to Teodor Robas).
+  - Fixed a memory allocation bug (thanks to matanfih).
 
 ### Version 5.50, 2018.12.02, urgency: MEDIUM
 * New features
@@ -366,10 +383,10 @@
 ### Version 5.49, 2018.09.03, urgency: MEDIUM
 * New features
   - Performance optimizations.
-  - Logging of negotiated or resumed TLS session IDs (thx
+  - Logging of negotiated or resumed TLS session IDs (thanks
     to ANSSI - National Cybersecurity Agency of France).
   - Merged Debian 10-enabled.patch and 11-killproc.patch
-    (thx to Peter Pentchev).
+    (thanks to Peter Pentchev).
   - OpenSSL DLLs updated to version 1.0.2p.
   - PKCS#11 engine DLL updated to version 0.4.9.
 * Bugfixes
@@ -413,7 +430,7 @@
   - OpenSSL DLLs updated to version 1.0.2o.
   - Deprecated the sslVersion option.
   - The "socket" option is now also available in service sections.
-  - Implemented try-restart in the SysV init script (thx to
+  - Implemented try-restart in the SysV init script (thanks to
     Peter Pentchev).
   - TLS 1.3 compliant session handling for OpenSSL 1.1.1.
   - Default "failover" value changed from "rr" to "prio".
@@ -426,9 +443,9 @@
   - Fixed exception handling in libwrap.
   - Fixed exec+connect services.
   - Fixed automatic resolver delaying.
-  - Fixed a Gentoo cross-compilation bug (thx to Joe Harvell).
+  - Fixed a Gentoo cross-compilation bug (thanks to Joe Harvell).
   - A number of "make check" framework fixes.
-  - Fixed false postive memory leak logs.
+  - Fixed false positive memory leak logs.
   - Build fixes for OpenSSL versions down to 0.9.7.
   - Fixed (again) round-robin failover in the FORK threading model.
 
@@ -446,7 +463,7 @@
   - Android build updated to OpenSSL 1.1.0g.
   - Allow for multiple "accept" ports per section.
   - Self-test framework (make check).
-  - Added config load before OpenSSL init (thx to Dmitrii Pichulin).
+  - Added config load before OpenSSL init (thanks to Dmitrii Pichulin).
   - OpenSSL 1.1.0 support for Travis CI.
   - OpenSSL 1.1.1-dev compilation fixes.
 * Bugfixes
@@ -485,7 +502,7 @@
   - The daily server DH parameter regeneration is only performed if
     DH ciphersuites are enabled in the configuration file.
   - "checkHost" and "checkEmail" were modified to require either
-    "verifyChain" or "verifyPeer" (thx to Małorzata Olszówka).
+    "verifyChain" or "verifyPeer" (thanks to Małorzata Olszówka).
 * Bugfixes
   - Fixed setting default ciphers.
 
@@ -508,11 +525,11 @@
 * New features
   - "sni=" can be used to prevent sending the SNI extension.
   - The AI_ADDRCONFIG resolver flag is used when available.
-  - Merged Debian 06-lfs.patch (thx to Peter Pentchev).
+  - Merged Debian 06-lfs.patch (thanks to Peter Pentchev).
 * Bugfixes
   - Fixed a memory allocation bug causing crashes with OpenSSL 1.1.0.
   - Fixed error handling for mixed IPv4/IPv6 destinations.
-  - Merged Debian 08-typos.patch (thx to Peter Pentchev).
+  - Merged Debian 08-typos.patch (thanks to Peter Pentchev).
 
 ### Version 5.37, 2016.11.06, urgency: MEDIUM
 * Bugfixes
@@ -548,17 +565,17 @@
 * New features
   - Improved memory leak detection performance and accuracy.
   - Improved compatibility with the current OpenSSL 1.1.0-dev tree.
-  - SNI support also enabled on OpenSSL 0.9.8f and later (thx to
+  - SNI support also enabled on OpenSSL 0.9.8f and later (thanks to
     Guillermo Rodriguez Garcia).
-  - Added support for PKCS #12 (.p12/.pfx) certificates (thx to
+  - Added support for PKCS #12 (.p12/.pfx) certificates (thanks to
     Dmitry Bakshaev).
 * Bugfixes
-  - Fixed a TLS session caching memory leak (thx to Richard Kraemer).
+  - Fixed a TLS session caching memory leak (thanks to Richard Kraemer).
     Before stunnel 5.27 this leak only emerged with sessiond enabled.
-  - Yet another WinCE socket fix (thx to Richard Kraemer).
+  - Yet another WinCE socket fix (thanks to Richard Kraemer).
   - Fixed passphrase/pin dialogs in tstunnel.exe.
   - Fixed a FORK threading build regression bug.
-  - OPENSSL_NO_DH compilation fix (thx to Brian Lin).
+  - OPENSSL_NO_DH compilation fix (thanks to Brian Lin).
 
 ### Version 5.32, 2016.05.03, urgency: HIGH
 * Security bugfixes
@@ -568,10 +585,10 @@
   - New "socket = a:IPV6_V6ONLY=yes" option to only bind IPv6.
   - Memory leak detection.
   - Improved compatibility with the current OpenSSL 1.1.0-dev tree.
-  - Added/fixed Red Hat scripts (thx to Andrew Colin Kissa).
+  - Added/fixed Red Hat scripts (thanks to Andrew Colin Kissa).
 * Bugfixes
-  - Workaround for a WinCE sockets quirk (thx to Richard Kraemer).
-  - Fixed data alignment on 64-bit MSVC (thx to Yuris W. Auzins).
+  - Workaround for a WinCE sockets quirk (thanks to Richard Kraemer).
+  - Fixed data alignment on 64-bit MSVC (thanks to Yuris W. Auzins).
 
 ### Version 5.31, 2016.03.01, urgency: HIGH
 * Security bugfixes
@@ -583,9 +600,9 @@
 * Bugfixes
   - Only reset the watchdog if some data was actually transferred.
   - A workaround implemented for the unexpected exceptfds set by
-    select() on WinCE 6.0 (thx to Richard Kraemer).
+    select() on WinCE 6.0 (thanks to Richard Kraemer).
   - Fixed logging an incorrect value of the round-robin starting
-    point (thx to Jose Alf.).
+    point (thanks to Jose Alf.).
 
 ### Version 5.30, 2016.01.28, urgency: HIGH
 * Security bugfixes
@@ -597,7 +614,7 @@
 * Bugfixes
   - Fixed references to /etc removed from stunnel.init.in.
   - Stopped even trying -fstack-protector on unsupported platforms
-    (thx to Rob Lockhart).
+    (thanks to Rob Lockhart).
 
 ### Version 5.29, 2016.01.08, urgency: LOW
 * New features
@@ -607,13 +624,13 @@
   - Compilation fix for *BSD.
   - Fixed configuration file reload for relative stunnel.conf path
     on Unix.
-  - Fixed ignoring CRLfile unless CAfile was also specified (thx
+  - Fixed ignoring CRLfile unless CAfile was also specified (thanks
     to Strukov Petr).
 
 ### Version 5.28, 2015.12.11, urgency: HIGH
 * New features
   - Build matrix (.travis.yml) extended with ./configure options.
-  - mingw.mak updated to build tstunnel.exe (thx to Jose Alf.).
+  - mingw.mak updated to build tstunnel.exe (thanks to Jose Alf.).
 * Bugfixes
   - Fixed incomplete initialization.
   - Fixed UCONTEXT threading on OSX.
@@ -631,7 +648,7 @@
   - Only attempt to use potentially harmful compiler or linker
     options if gcc was detected.
   - /opt/csw added to the OpenSSL directory lookup list.
-  - mingw.mak updates (thx to Jose Alf.).
+  - mingw.mak updates (thanks to Jose Alf.).
   - TODO list updated.
 
 ### Version 5.26, 2015.11.06, urgency: MEDIUM
@@ -642,9 +659,9 @@
 * New features
   - SMTP client protocol negotiation support for
     "protocolUsername", "protocolPassword", and
-    "protocolAuthentication" (thx to Douglas Harris).
+    "protocolAuthentication" (thanks to Douglas Harris).
   - New service-level option "config" to specify configuration
-    commands introduced in OpenSSL 1.0.2 (thx to Stephen Wall).
+    commands introduced in OpenSSL 1.0.2 (thanks to Stephen Wall).
   - The global option "foreground" now also accepts "quiet"
     parameter, which does not enable logging to stderr.
   - Manual page updated.
@@ -656,8 +673,8 @@
   - Fixed the "s_poll_wait returned 1, but no descriptor
     is ready" internal error.
   - Fixed "exec" hangs due to incorrect thread-local
-    storage handling (thx to Philip Craig).
-  - Fixed PRNG initialization (thx to Philip Craig).
+    storage handling (thanks to Philip Craig).
+  - Fixed PRNG initialization (thanks to Philip Craig).
   - Setting socket options no longer performed on PTYs.
   - Fixed 64-bit Windows build.
 
@@ -669,15 +686,15 @@
     client-side "protocol = socks". This feature should
     work at least on FreeBSD, OpenBSD and OS X.
   - Added a new "protocolDomain" option for the NTLM
-    authentication (thx to Andreas Botsikas).
-  - Improved compatibility of the NTLM phase 1 message (thx
+    authentication (thanks to Andreas Botsikas).
+  - Improved compatibility of the NTLM phase 1 message (thanks
     to Andreas Botsikas).
   - "setuid" and "setgid" options are now also available
     in service sections.  They can be used to set owner
     and group of the Unix socket specified with "accept".
   - Added support for the new OpenSSL 1.0.2 SSL options.
-  - Added OPENSSL_NO_EGD support (thx to Bernard Spil).
-  - VC autodetection added to makew32.bat (thx to Andreas
+  - Added OPENSSL_NO_EGD support (thanks to Bernard Spil).
+  - VC autodetection added to makew32.bat (thanks to Andreas
     Botsikas).
 * Bugfixes
   - Fixed the RESOLVE [F0] TOR extension support in SOCKS5.
@@ -727,7 +744,7 @@
     This speeds up stunnel startup on Win32 with a slow/defunct
     DNS service.
   - The "make check" target was modified to only build Win32
-    executables when stunnel is built from a git repository (thx
+    executables when stunnel is built from a git repository (thanks
     to Peter Pentchev).
   - More elaborate descriptions were added to the warning about
     using "verify = 2" without "checkHost" or "checkIP".
@@ -750,7 +767,7 @@
   - Warnings about insecure authentication were modified to
     include the name of the affected service section.
   - A warning was added to stunnel.init if no pid file was
-    specified in the configuration file (thx to Peter Pentchev).
+    specified in the configuration file (thanks to Peter Pentchev).
   - Optional debugging symbols are included in the Win32 installer.
   - Documentation updates (closes Debian bug #781669).
 * Bugfixes
@@ -761,9 +778,9 @@
   - Fixed removing the disabled taskbar icon.
   - Generated temporary DH parameters are used for configuration
     reload instead of the static defaults.
-  - LSB compatibility fixes added to the stunnel.init script (thx
+  - LSB compatibility fixes added to the stunnel.init script (thanks
     to Peter Pentchev).
-  - Fixed the manual page headers (thx to Gleydson Soares).
+  - Fixed the manual page headers (thanks to Gleydson Soares).
 
 ### Version 5.19, 2015.06.16, urgency: MEDIUM
 * New features
@@ -775,8 +792,8 @@
   - Cron thread priority on Win32 platform changed to
     THREAD_PRIORITY_LOWEST to improve portability.
   - Makefile bugfixes for stunnel 5.18 regressions.
-  - Fixed some typos in docs and scripts (thx to Peter Pentchev).
-  - Fixed a log level check condition (thx to Peter Pentchev).
+  - Fixed some typos in docs and scripts (thanks to Peter Pentchev).
+  - Fixed a log level check condition (thanks to Peter Pentchev).
 
 ### Version 5.18, 2015.06.12, urgency: MEDIUM
 * New features
@@ -792,12 +809,12 @@
   - Warnings are logged on potentially insecure authentication.
   - Improved compatibility with the current OpenSSL 1.1.0-dev tree:
     removed RLE compression support, etc.
-  - Updated stunnel.spec (thx to Bill Quayle).
+  - Updated stunnel.spec (thanks to Bill Quayle).
 * Bugfixes
   - Fixed handling of dynamic connect targets.
   - Fixed handling of trailing whitespaces in the Content-Length
     header of the NTLM authentication.
-  - Fixed --sysconfdir and --localstatedir handling (thx to
+  - Fixed --sysconfdir and --localstatedir handling (thanks to
     Dagobert Michelsen).
 
 ### Version 5.17, 2015.04.29, urgency: HIGH
@@ -819,7 +836,7 @@
     "checkHost" option to validate server certs accepted by Mozilla.
   - New commandline options "-reload" to reload the configuration
     file and "-reopen" to reopen the log file of stunnel running
-    as a Windows service (thx to Marc McLaughlin).
+    as a Windows service (thanks to Marc McLaughlin).
   - Added session persistence based on negotiated TLS sessions.
     https://en.wikipedia.org/wiki/Load_balancing_%28computing%29#Persistence
     The current implementation does not support external TLS
@@ -873,7 +890,7 @@
   - New service-level option "debug" to individually control
     logging verbosity of defined services.
 * Bugfixes
-  - OCSP fixed on Windows platform (thx to Alec Kosky).
+  - OCSP fixed on Windows platform (thanks to Alec Kosky).
 
 ### Version 5.11, 2015.03.11, urgency: LOW
 * New features
@@ -883,7 +900,7 @@
     O(N) (linear) to O(log N) (logarithmic).
 * Bugfixes
   - Fixed peer certificate list in the main window on Win32
-    (thx to @fyer for reporting it).
+    (thanks to @fyer for reporting it).
   - Fixed console logging in tstunnel.exe.
   - _tputenv_s() replaced with more portable _tputenv() on Win32.
 
@@ -912,8 +929,8 @@
   - Removed defective s_poll_error() code occasionally causing
     connections to be prematurely closed (truncated).
     This bug was introduced in stunnel 4.34.
-  - Fixed ./configure systemd detection (thx to Kip Walraven).
-  - Fixed ./configure sysroot detection (thx to Kip Walraven).
+  - Fixed ./configure systemd detection (thanks to Kip Walraven).
+  - Fixed ./configure sysroot detection (thanks to Kip Walraven).
   - Fixed compilation against old versions of OpenSSL.
   - Removed outdated French manual page.
 
@@ -969,23 +986,23 @@
 * New features
   - Asynchronous communication with the GUI thread for faster
     logging on Win32.
-  - systemd socket activation (thx to Mark Theunissen).
+  - systemd socket activation (thanks to Mark Theunissen).
   - The parameter of "options" can now be prefixed with "-"
     to clear an SSL option, for example:
     "options = -LEGACY_SERVER_CONNECT".
-  - Improved "transparent = destination" manual page (thx to
+  - Improved "transparent = destination" manual page (thanks to
     Vadim Penzin).
 * Bugfixes
   - Fixed POLLIN|POLLHUP condition handling error resulting
     in prematurely closed (truncated) connection.
   - Fixed a null pointer dereference regression bug in the
-    "transparent = destination" functionality (thx to
+    "transparent = destination" functionality (thanks to
     Vadim Penzin). This bug was introduced in stunnel 5.00.
   - Fixed startup thread synchronization with Win32 GUI.
   - Fixed erroneously closed stdin/stdout/stderr if specified
     as the -fd commandline option parameter.
   - A number of minor Win32 GUI bugfixes and improvements.
-  - Merged most of the Windows CE patches (thx to Pierre Delaage).
+  - Merged most of the Windows CE patches (thanks to Pierre Delaage).
   - Fixed incorrect CreateService() error message on Win32.
   - Implemented a workaround for defective Cygwin file
     descriptor passing breaking the libwrap support:
@@ -995,10 +1012,10 @@
 * New features
   - Support for local mode ("exec" option) on Win32.
   - Support for UTF-8 config file and log file.
-  - Win32 UTF-16 build (thx to Pierre Delaage for support).
+  - Win32 UTF-16 build (thanks to Pierre Delaage for support).
   - Support for Unicode file names on Win32.
   - A more explicit service description provided for the
-    Windows SCM (thx to Pierre Delaage).
+    Windows SCM (thanks to Pierre Delaage).
   - TCP/IP dependency added for NT service in order to prevent
     initialization failure at boot time.
   - FIPS canister updated to version 2.0.8 in the Win32 binary
@@ -1007,7 +1024,7 @@
   - load_icon_default() modified to return copies of default icons
     instead of the original resources to prevent the resources
     from being destroyed.
-  - Partially merged Windows CE patches (thx to Pierre Delaage).
+  - Partially merged Windows CE patches (thanks to Pierre Delaage).
   - Fixed typos in stunnel.init.in and vc.mak.
   - Fixed incorrect memory allocation statistics update in
     str_realloc().
@@ -1017,7 +1034,7 @@
   - Fixed taskbar icon initialization when commandline options are
     specified.
   - Reportedly more compatible values used for the dwDesiredAccess
-    parameter of the CreateFile() function (thx to Pierre Delaage).
+    parameter of the CreateFile() function (thanks to Pierre Delaage).
   - A number of minor Win32 GUI bugfixes and improvements.
 
 ### Version 5.03, 2014.08.07, urgency: HIGH
@@ -1060,7 +1077,7 @@
   - X.509 extensions added to the created self-signed stunnel.pem.
   - "FIPS = no" also allowed in non-FIPS builds of stunnel.
   - Search all certificates with the same subject name for a matching
-    public key rather than only the first one (thx to Leon Winter).
+    public key rather than only the first one (thanks to Leon Winter).
   - Create logs in the local application data folder if stunnel folder
     is not writable on Win32.
 * Bugfixes
@@ -1114,9 +1131,9 @@
   - Improved readability of error messages printed when stunnel refuses
     to start due to a critical error.
 * Bugfixes
-  - LD_PRELOAD Solaris compatibility bug fixed (thx to Norm Jacobs).
+  - LD_PRELOAD Solaris compatibility bug fixed (thanks to Norm Jacobs).
   - CRYPTO_NUM_LOCKS replaced with CRYPTO_num_locks() to improve binary
-    compatibility with diverse builds of OpenSSL (thx to Norm Jacobs).
+    compatibility with diverse builds of OpenSSL (thanks to Norm Jacobs).
   - Corrected round-robin failover behavior under heavy load.
   - Numerous fixes in the engine support code.
   - On Win32 platform .rnd file moved from c:\ to the stunnel folder.
@@ -1148,12 +1165,12 @@
   - SNI wildcard matching in server mode.
   - Terminal version of stunnel (tstunnel.exe) build for Win32.
 * Bugfixes
-  - Fixed write half-close handling in the transfer() function (thx to
+  - Fixed write half-close handling in the transfer() function (thanks to
     Dustin Lundquist).
-  - Fixed EAGAIN error handling in the transfer() function (thx to Jan Bee).
-  - Restored default signal handlers before execvp() (thx to Michael Weiser).
-  - Fixed memory leaks in protocol negotiation (thx to Arthur Mesh).
-  - Fixed a file descriptor leak during configuration file reload (thx to
+  - Fixed EAGAIN error handling in the transfer() function (thanks to Jan Bee).
+  - Restored default signal handlers before execvp() (thanks to Michael Weiser).
+  - Fixed memory leaks in protocol negotiation (thanks to Arthur Mesh).
+  - Fixed a file descriptor leak during configuration file reload (thanks to
     Arthur Mesh).
   - Closed SSL sockets were removed from the transfer() c->fds poll.
   - Minor fix in handling exotic inetd-mode configurations.
@@ -1176,18 +1193,18 @@
     to indicate errors.  The default value is "reset = yes".
   - New service-level option "renegotiation" to disable SSL renegotiation.
     This feature is based on a public-domain patch by Janusz Dziemidowicz.
-  - New FreeBSD socket options: IP_FREEBIND, IP_BINDANY, IPV6_BINDANY (thx
+  - New FreeBSD socket options: IP_FREEBIND, IP_BINDANY, IPV6_BINDANY (thanks
     to Janusz Dziemidowicz).
   - New parameters to configure TLS v1.1/v1.2 with OpenSSL version 1.0.1
-    or higher (thx to Henrik Riomar).
+    or higher (thanks to Henrik Riomar).
 * Bugfixes
   - Fixed "Application Failed to Initialize Properly (0xc0150002)" error.
   - Fixed missing SSL state debug log entries.
-  - Fixed a race condition in libwrap code resulting in random stalls (thx
+  - Fixed a race condition in libwrap code resulting in random stalls (thanks
     to Andrew Skalski).
   - Session cache purged at configuration file reload to reduce memory leak.
     Remaining leak of a few kilobytes per section is yet to be fixed.
-  - Fixed a regression bug in "transparent = destination" functionality (thx
+  - Fixed a regression bug in "transparent = destination" functionality (thanks
     to Stefan Lauterbach). This bug was introduced in stunnel 4.51.
   - "transparent = destination" is now a valid endpoint in inetd mode.
   - "delay = yes" fixed to work even if specified *after* "connect" option.
@@ -1199,7 +1216,7 @@
 * New features
   - Added client-mode "sni" option to directly control the value of
     TLS Server Name Indication (RFC 3546) extension.
-  - Added support for IP_FREEBIND socket option with a pached Linux kernel.
+  - Added support for IP_FREEBIND socket option with a patched Linux kernel.
   - Glibc-specific dynamic allocation tuning was applied to help unused memory
     deallocation.
   - Non-blocking OCSP implementation.
@@ -1207,7 +1224,7 @@
   - Compilation fixes for old versions of OpenSSL (tested against 0.9.6).
   - Usage of uninitialized variables fixed in exec+connect services.
   - Occasional logging subsystem crash with exec+connect services.
-  - OpenBSD compilation fix (thx to Michele Orru').
+  - OpenBSD compilation fix (thanks to Michele Orru').
   - Session id context initialized with session name rather than a constant.
   - Fixed handling of a rare inetd mode use case, where either stdin or stdout
     is a socket, but not both of them at the same time.
@@ -1233,7 +1250,7 @@
   - Updated Win32 binary distribution OpenSSL DLLs to version 0.9.8s-fips.
   - Updated Android binary OpenSSL to version 1.0.0f.
   - Zlib support added to Win32 and Android binary builds.
-  - New "compression = deflate" global option to enable RFC 2246 compresion.
+  - New "compression = deflate" global option to enable RFC 2246 compression.
     For compatibility with previous versions "compression = zlib" and
     "compression = rle" also enable the deflate (RFC 2246) compression.
   - Compression is disabled by default.
@@ -1256,7 +1273,7 @@
     GPL compatibility issues are explained in the GPL FAQ:
     http://www.gnu.org/licenses/gpl-faq.html#WindowsRuntimeAndGPL
   - POP3 server-side protocol negotiation updated to report STLS
-    capability (thx to Anthony Morgan).
+    capability (thanks to Anthony Morgan).
 
 ### Version 4.49, 2011.11.28, urgency: MEDIUM
 * Bugfixes
@@ -1316,11 +1333,11 @@
   - Protocol negotiation framework was rewritten to support additional
     code to be executed after SSL_accept()/SSL_connect().
   - Handling of memory allocation errors was rewritten to gracefully
-    terminate the process (thx to regenrecht for the idea).
+    terminate the process (thanks to regenrecht for the idea).
 * Bugfixes
-  - Fixed -l option handling in stunnel3 script (thx to Kai Gülzau).
-  - Script to build default stunnel.pem was fixed (thx to Sebastian Kayser).
-  - MinGW compilation script (mingw.mak) was fixed (thx to Jose Alf).
+  - Fixed -l option handling in stunnel3 script (thanks to Kai Gülzau).
+  - Script to build default stunnel.pem was fixed (thanks to Sebastian Kayser).
+  - MinGW compilation script (mingw.mak) was fixed (thanks to Jose Alf).
   - MSVC compilation script (vc.mak) was fixed.
   - A number of problems in WINSOCK error handling were fixed.
 
@@ -1331,8 +1348,8 @@
   - Stack buffer overflow protection with -fstack-protector.
 * Bugfixes
   - Fixed garbled error messages on errors with setuid/setgid options.
-  - SNI fixes (thx to Alexey Drozdov).
-  - Use after free in fdprintf() (thx to Alexey Drozdov).
+  - SNI fixes (thanks to Alexey Drozdov).
+  - Use after free in fdprintf() (thanks to Alexey Drozdov).
     This issue might cause GPF with "protocol" or "ident" options.
 
 ### Version 4.43, 2011.09.07, urgency: MEDIUM
@@ -1365,7 +1382,7 @@
 ### Version 4.40, 2011.07.23, urgency: LOW
 * New Win32 features
   - Added a GUI menu to save cached peer certificate chains.
-  - Added comandline "-exit" option to stop stunnel *not* running
+  - Added commandline "-exit" option to stop stunnel *not* running
     as a service.  This option may be useful for scripts.
   - Added file version information to stunnel.exe.
   - A number of other GUI improvements.
@@ -1423,12 +1440,12 @@
   - Dynamic memory management for strings manipulation:
     no more static STRLEN limit, lower stack footprint.
   - Strict public key comparison added for "verify = 3" certificate
-    checking mode (thx to Philipp Hartwig).
+    checking mode (thanks to Philipp Hartwig).
   - Backlog parameter of listen(2) changed from 5 to SOMAXCONN:
     improved behavior on heavy load.
   - Example tools/stunnel.service file added for systemd service manager.
 * Bugfixes
-  - Missing pthread_attr_destroy() added to fix memory leak (thx to
+  - Missing pthread_attr_destroy() added to fix memory leak (thanks to
     Paul Allex and Peter Pentchev).
   - Fixed the incorrect way of setting FD_CLOEXEC flag.
   - Fixed --enable-libwrap option of ./configure script.
@@ -1452,7 +1469,7 @@
     This issue may have security implications on some deployments:
     http://udrepper.livejournal.com/20407.html
   - Directory lib64 included in the OpenSSL library search path.
-  - Windows CE compilation fixes (thx to Pierre Delaage).
+  - Windows CE compilation fixes (thanks to Pierre Delaage).
   - Deprecated RSA_generate_key() replaced with RSA_generate_key_ex().
 * Domain name changes (courtesy of Bri Hatch)
   - http://stunnel.mirt.net/ --> http://www.stunnel.org/
@@ -1518,7 +1535,7 @@
     available for download on ftp://ftp.stunnel.org/stunnel/sessiond/ .
     stunnel clusters will be a lot faster, now!
 * Bugfixes
-  - "execargs" defaults to the "exec" parameter (thx to Peter Pentchev).
+  - "execargs" defaults to the "exec" parameter (thanks to Peter Pentchev).
   - Compilation fixes added for AIX and old versions of OpenSSL.
   - Missing "fips" option was added to the manual.
 
@@ -1698,7 +1715,7 @@
   - configure script sections reordered to detect pthread library functions.
   - RFC 2487 autodetection improved.  High resolution s_poll_wait()
     not currently supported by UCONTEXT threading.
-  - More precise description of cert directory file names (thx to Muhammad
+  - More precise description of cert directory file names (thanks to Muhammad
     Muquit).
 * Other changes
   - Maximum number of services increased from 64 to 256 when poll() is used.
@@ -1795,7 +1812,7 @@
 ### Version 4.10, 2005.04.23, urgency: LOW/EXPERIMENTAL
 * DLLs for OpenSSL 0.9.7g.
 * Bugfixes
-  - Missing locking on Win32 platform was added (thx to Yi Lin
+  - Missing locking on Win32 platform was added (thanks to Yi Lin
     <yi.lin@convergys.com>)
   - Some problems with closing SSL fixed.
 * New features
@@ -1888,7 +1905,7 @@
   - Support for CIFS aka SMB protocol SSL negotiation.
 * New features
   - CRL support with new CRLpath and CRLfile global options.
-  - New 'taskbar' option on Win32 (thx to Ken Mattsen
+  - New 'taskbar' option on Win32 (thanks to Ken Mattsen
     <ken.Mattsen@roxio.com>).
   - New -fd command line parameter to read configuration
     from a specified file descriptor instead of a file.
@@ -1901,7 +1918,7 @@
   - French manual by Bernard Choppy <choppy@imaginet.fr>.
   - Thread stack size reduced to 64KB for maximum scalability.
   - Added optional code to debug thread stack usage.
-  - Support for nsr-tandem-nsk (thx to Tom Bates <tom.bates@hp.com>).
+  - Support for nsr-tandem-nsk (thanks to Tom Bates <tom.bates@hp.com>).
 * Bugfixes
   - TCP wrappers code moved to CRIT_NTOA critical section
     since it uses static inet_ntoa() result buffer.
@@ -1924,7 +1941,7 @@
     OpenSSL library hacks with SSL_CTX_set_options().
   - 'service' option also changes the name for
     TCP Wrappers access control in inetd mode.
-  - Support for BeOS (thx to Mike I. Kozin <mik@sbor.net>)
+  - Support for BeOS (thanks to Mike I. Kozin <mik@sbor.net>)
   - SSL is negotiated before connecting remote host
     or spawning local process whenever possible.
   - REMOTE_HOST variable is always placed in the
@@ -1934,7 +1951,7 @@
   - Manual page updated (special thanks to Brian Hatch).
   - TODO updated.
 * Bugfixes
-  - Major code cleanup (thx to Steve Grubb <linux_4ever@yahoo.com>).
+  - Major code cleanup (thanks to Steve Grubb <linux_4ever@yahoo.com>).
   - Unsafe functions are removed from SIGCHLD handler.
   - Several bugs in auth_user() fixed.
   - Incorrect port when using 'local' option fixed.
@@ -1963,7 +1980,7 @@
   - Log file is created with 0640 mode.
   - exec->connect service sections (need more testing).
 * Bugfixes
-  - EINTR ingored in main select() loop.
+  - EINTR ignored in main select() loop.
   - Fixed problem with stunnel closing connections on
     TIMEOUTclose before all the data is sent.
   - Fixed EWOULDBLOCK on writesocket problem.
@@ -2346,7 +2363,7 @@
 
 ### 1.0 1998.02.11
 * First version with SSL support
-  - special thx to Adam Hernik <adas@infocentrum.com>.
+  - special thanks to Adam Hernik <adas@infocentrum.com>.
 
 ### 0.1 1998.02.10
 * Testing skeleton.

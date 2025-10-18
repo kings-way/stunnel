@@ -389,7 +389,7 @@ Section "Core Files" sectionCORE
   File "${STUNNEL_BIN_DIR}\stunnel.exe"
   !insertmacro RunTime "libssp-0.dll"
   !if ${ARCH} == win32
-    !insertmacro RunTime "libgcc_s_dw2-1.dll"
+    #!insertmacro RunTime "libgcc_s_dw2-1.dll"
     # Visual C++ 2008
     #File "${OPENSSL_BIN_DIR}\libeay32.dll"
     #File "${OPENSSL_BIN_DIR}\ssleay32.dll"
@@ -401,7 +401,7 @@ Section "Core Files" sectionCORE
       File "${MIMALLOC_BIN_DIR}\mimalloc-redirect32.dll"
     !endif
   !else
-    !insertmacro RunTime "libgcc_s_seh-1.dll"
+    #!insertmacro RunTime "libgcc_s_seh-1.dll"
     File "${OPENSSL_BIN_DIR}\libcrypto-${SUFFIX}-x64.dll"
     File "${OPENSSL_BIN_DIR}\libssl-${SUFFIX}-x64.dll"
     #SetOutPath "$INSTDIR"
@@ -675,7 +675,7 @@ Section "Uninstall"
   SimpleFC::RemoveApplication "$INSTDIR\bin\tstunnel.exe"
   !insertmacro DetailError "SimpleFC::RemoveApplication failed for tstunnel.exe"
 
-  # remove the installer and uninstaller registry entires
+  # remove the installer and uninstaller registry entries
   DeleteRegKey SHCTX "${REGKEY_INSTALL}"
   DeleteRegKey SHCTX "${REGKEY_UNINST}"
 SectionEnd

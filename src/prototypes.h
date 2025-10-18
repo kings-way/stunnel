@@ -309,7 +309,7 @@ struct service_options_struct {
 #ifndef OPENSSL_NO_TLS1_3
     char *ciphersuites;
 #endif /* TLS 1.3 */
-    char *cert;                                             /* cert filename */
+    NAME_LIST *cert;    /* list of certificate identifiers (URI or filename) */
     char *key;                               /* pem (priv key/cert) filename */
     long session_size, session_timeout;
 #if OPENSSL_VERSION_NUMBER>=0x10100000L
@@ -423,6 +423,16 @@ struct service_options_struct {
 #ifndef USE_WIN32
         unsigned log_stderr:1;          /* a copy of the global switch */
 #endif /* USE_WIN32 */
+        unsigned default_local_addr:1;
+        unsigned default_ca_engine:1;
+        unsigned default_cert:1;
+        unsigned default_check_email:1;
+        unsigned default_check_host:1;
+        unsigned default_check_ip:1;
+        unsigned default_config:1;
+        unsigned default_connect_addr:1;
+        unsigned default_protocol_header:1;
+        unsigned default_redirect_addr:1;
     } option;
 };
 
@@ -633,8 +643,10 @@ int cron_init(void);
 extern int index_ssl_cli, index_ssl_ctx_opt;
 extern int index_session_authenticated, index_session_connect_address;
 
+#ifdef USE_FIPS
 int fips_default(void);
 int fips_available(void);
+#endif
 void crypto_init(void);
 int ssl_init(void);
 int ssl_configure(GLOBAL_OPTIONS *);

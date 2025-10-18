@@ -55,7 +55,7 @@
 .\" ========================================================================
 .\"
 .IX Title "stunnel 8"
-.TH stunnel 8 2025.05.16 5.75 "stunnel TLS Proxy"
+.TH stunnel 8 2025.09.19 5.76 "stunnel TLS Proxy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -418,6 +418,11 @@ The file must be either in PEM or P12 format.
 .Sp
 A certificate chain is required in server mode, and optional in client mode.
 .Sp
+The \fBcert\fR option may be specified multiple times. The first certificate
+encountered is used as the server or client certificate, while any subsequent
+certificates are treated as intermediate chain elements. This functionality
+requires OpenSSL version 1.0.2 or later.
+.Sp
 This parameter is also used as the certificate identifier (PKCS#11 URI) when
 a hardware engine or provider is enabled.
 .Sp
@@ -761,7 +766,7 @@ Currently supported protocols:
 .RS 4
 .IP \fIcifs\fR 4
 .IX Item "cifs"
-Proprietary (undocummented) extension of CIFS protocol implemented in Samba.
+Proprietary (undocumented) extension of CIFS protocol implemented in Samba.
 Support for this extension was dropped in Samba 3.0.0.
 .IP \fIcapwin\fR 4
 .IX Item "capwin"

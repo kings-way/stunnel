@@ -716,9 +716,28 @@ NOEXPORT void print_tmp_key(SSL *s) {
 #endif
     if(!tmp_key_found) {
         s_log(LOG_INFO, "No peer temporary key received");
+#if OPENSSL_VERSION_NUMBER>=0x30000000L
+        if(SSL_version(s) == TLS1_3_VERSION) {
+            s_log(LOG_INFO, "Negotiated TLSv1.3 group: %s",
+                SSL_group_to_name(s, (int)SSL_get_negotiated_group(s)));
+        }
+#endif /* OPENSSL_VERSION_NUMBER>=0x30000000L */
         return;
     }
     switch(EVP_PKEY_id(key)) {
+#if OPENSSL_VERSION_NUMBER>=0x30000000L
+    case EVP_PKEY_KEYMGMT:
+        {
+            const char *keyname=EVP_PKEY_get0_type_name(key);
+
+            if(keyname)
+                s_log(LOG_INFO, "Peer temporary key: %s, %d bits",
+                    keyname, EVP_PKEY_bits(key));
+            else
+                s_log(LOG_INFO, "Unable to determine temporary key type");
+        }
+        break;
+#endif /* OPENSSL_VERSION_NUMBER>=0x30000000L */
     case EVP_PKEY_RSA:
         s_log(LOG_INFO, "Peer temporary key: RSA, %d bits", EVP_PKEY_bits(key));
         break;
@@ -731,6 +750,7 @@ NOEXPORT void print_tmp_key(SSL *s) {
             EC_KEY *ec=EVP_PKEY_get1_EC_KEY(key);
             int nid=EC_GROUP_get_curve_name(EC_KEY_get0_group(ec));
             const char *cname=EC_curve_nid2nist(nid);
+
             EC_KEY_free(ec);
             if (cname == NULL)
                 cname=OBJ_nid2sn(nid);
@@ -739,8 +759,15 @@ NOEXPORT void print_tmp_key(SSL *s) {
         break;
 #endif
     default:
-        s_log(LOG_INFO, "Peer temporary key: %s, %d bits", OBJ_nid2sn(EVP_PKEY_id(key)),
-                   EVP_PKEY_bits(key));
+        {
+            int keyid=EVP_PKEY_id(key);
+
+            if(keyid != NID_undef)
+                s_log(LOG_INFO, "Peer temporary key: %s, %d bits",
+                    OBJ_nid2sn(keyid), EVP_PKEY_bits(key));
+            else
+                s_log(LOG_INFO, "Unable to determine temporary key type");
+        }
     }
     EVP_PKEY_free(key);
 }
@@ -825,7 +852,7 @@ NOEXPORT void transfer(CLI *c) {
 
         /****************************** setup c->fds structure */
         s_poll_init(c->fds, 0); /* initialize the structure */
-        /* for plain socket open data strem = open file descriptor */
+        /* for plain socket open data stream = open file descriptor */
         /* make sure to add each open socket to receive exceptions! */
         if(sock_open_rd) /* only poll if the read file descriptor is open */
             s_poll_add(c->fds, c->sock_rfd->fd, c->sock_ptr<BUFFSIZE, 0);

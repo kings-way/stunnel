@@ -510,6 +510,8 @@
 
 <p>A certificate chain is required in server mode, and optional in client mode.</p>
 
+<p>The <b>cert</b> option may be specified multiple times. The first certificate encountered is used as the server or client certificate, while any subsequent certificates are treated as intermediate chain elements. This functionality requires OpenSSL version 1.0.2 or later.</p>
+
 <p>This parameter is also used as the certificate identifier (PKCS#11 URI) when a hardware engine or provider is enabled.</p>
 
 <p>Note: The provider requires OpenSSL 3.0 or later</p>
@@ -896,7 +898,7 @@ options = NO_SSLv3</code></pre>
 <dt id="cifs"><i>cifs</i></dt>
 <dd>
 
-<p>Proprietary (undocummented) extension of CIFS protocol implemented in Samba. Support for this extension was dropped in Samba 3.0.0.</p>
+<p>Proprietary (undocumented) extension of CIFS protocol implemented in Samba. Support for this extension was dropped in Samba 3.0.0.</p>
 
 </dd>
 <dt id="capwin"><i>capwin</i></dt>

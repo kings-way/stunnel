@@ -762,7 +762,11 @@ class TestSuite(TestResult):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
             bufsize=0,
-            env=self.cfg.utf8_env
+            env=self.cfg.utf8_env,
+            # Detach the subprocess from the controlling terminal by creating a new session.
+            # This prevents the child process from accessing /dev/tty, which is useful
+            # for disabling interactive password prompts or terminal I/O.
+            preexec_fn=os.setsid
         )
         await self.cfg.mainq.put(
             LogEvent(
@@ -2045,7 +2049,7 @@ async def main() -> None:
         except asyncio.CancelledError as err:
             # Logging is not available at this point.
             print(err)
-            print("Framework initalization failed")
+            print("Framework initialization failed")
             sys.exit(EXIT_FAILURE)
 
         # Execute the tests.

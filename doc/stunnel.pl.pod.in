@@ -457,6 +457,11 @@ Obsługiwane są pliki w formacie PEM lub P12.
 Certyfikat jest konieczny, aby używać programu w trybie serwera.
 W trybie klienta certyfikat jest opcjonalny.
 
+Opcja B<cert> może być podana wielokrotnie. Pierwszy napotkany certyfikat
+zostanie użyty jako certyfikat serwera lub klienta, natomiast kolejne będą
+traktowane jako elementy pośrednie łańcucha. Ta funkcjonalność wymaga biblioteki
+OpenSSL w wersji 1.0.2 lub nowszej.
+
 Jeżeli używany jest silnik kryptograficzny lub provider, to opcja B<cert>
 pozwala wybrać identyfikator (PKCS#11 URI) używanego certyfikatu.
 
@@ -779,13 +784,9 @@ OCSP.
 
 wymagaj  rozstrzygającej odpowiedzi respondera OCSP
 
-=item B<OCSPrequire> = yes | no
-
 Wyłączenie tej opcji pozwala na zaakceptowanie połączenia pomimo braku
 otrzymania rozstrzygającej odpowiedzi OCSP ze staplingu i bezpośredniego
 żądania wysłanego do respondera.
-
-default: yes
 
 domyślnie: yes
 

@@ -475,7 +475,7 @@ int sthreads_init(void) {
     /* update tls for newly allocated ready_head */
     ui_tls=tls_alloc(NULL, ui_tls, "ui");
     /* no need to initialize ucontext_t structure here
-       it will be initialied with swapcontext() call */
+       it will be initialized with swapcontext() call */
     return 0;
 }
 
