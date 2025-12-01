@@ -342,7 +342,7 @@ int ocsp_stapling(SERVICE_OPTIONS *opt) {
     ocsp.leeway=30; /* allow for 30 second leeway */
     /* OCSP_basic_verify() returns success if the signer certificate
      * was found in a set of untrusted intermediate certificates */
-    ocsp.flags=OCSP_TRUSTOTHER;
+    ocsp.flags=OCSP_TRUSTOTHER | opt->ocsp_flags;
     ocsp.url=NULL; /* to be set in check_aia() */
     ocsp.source_found=0;
     ocsp.callback_ctx_error=0;
